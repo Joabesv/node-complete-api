@@ -1,50 +1,32 @@
 // node recommends to still import;
 // https://nodejs.org/api/buffer.html#buffer
-import { Buffer } from 'node:buffer';
 import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
-import { Transform } from 'node:stream';
+import { json } from './middlewares/json.js';
+import { Database } from './db.js';
 
-class InverseNumberStream extends Transform {
-  _transform(chunk, encoding, cb) {
-    const modifiedData = Number(chunk.toString()) * -1;
+const database = new Database();
 
-    console.log(modifiedData);
-
-    cb(null, Buffer.from(String(modifiedData)));
-  }
-}
-
-const users = [];
 const server = createServer(async (req, res) => {
   const { method, url } = req;
-  const buffers = [];
 
-  for await (const chunks of req) {
-    buffers.push(chunks);
-  }
-
-  try {
-    req.body = JSON.parse(Buffer.concat(buffers).toString());
-  } catch (err) {
-    req.body = null;
-  }
+  await json(req, res);
 
   if (method === 'GET' && url === '/users') {
-    return res
-      .setHeader('Content-Type', 'application/json')
-      .end(JSON.stringify(users));
+    const users = database.select('users');
+    return res.end(JSON.stringify(users));
   }
 
   if (method === 'POST' && url === '/users') {
     const { name, email } = req.body;
 
-    users.push({
+    const user = {
       id: randomUUID(),
       name,
       email,
-    });
-    return res.writeHead(201).end('criando um usuário');
+    };
+    await database.insert('users', user);
+    return res.writeHead(201).end();
   }
 
   return res.writeHead(404).end('No routes found');
