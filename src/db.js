@@ -18,8 +18,8 @@ export class Database {
       });
   }
 
-  async #persist() {
-    await writeFile(databasePath, JSON.stringify(this.#database));
+  #persist() {
+    writeFile(databasePath, JSON.stringify(this.#database));
   }
 
   select(table) {
@@ -28,14 +28,14 @@ export class Database {
     return data;
   }
 
-  async insert(table, data) {
+  insert(table, data) {
     if (Array.isArray(this.#database[table])) {
       this.#database[table].push(data);
     } else {
       this.#database[table] = [data];
     }
 
-    await this.#persist();
+    this.#persist();
 
     return data;
   }
