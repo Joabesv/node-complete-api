@@ -25,7 +25,7 @@ const server = createServer(async (req, res) => {
       name,
       email,
     };
-    database.insert('users', user);
+    await database.insert('users', user);
     return res.writeHead(201).end();
   }
 
