@@ -18,11 +18,10 @@ const server = createServer((req, res) => {
       name: 'Joaozinho123',
       email: 'joaozinhoMaisBrabo@gmail.com',
     });
-
-    return res.end('criando um usuário');
+    return res.writeHead(201).end('criando um usuário');
   }
 
-  return res.end('Salve rapa');
+  return res.writeHead(404).end('No routes found');
 });
 
 server.listen(5000, () => {
