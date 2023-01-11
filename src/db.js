@@ -45,7 +45,7 @@ export class Database {
 
     if (rowIndex > -1) {
       this.#database[table][rowIndex] = { id, ...data };
-      this.#persist;
+      this.#persist();
     }
   }
 
@@ -54,7 +54,7 @@ export class Database {
 
     if (rowIndex > -1) {
       this.#database[table].splice(rowIndex, 1);
-      this.#persist;
+      this.#persist();
     }
   }
 }
